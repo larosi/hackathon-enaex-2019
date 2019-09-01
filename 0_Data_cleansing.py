@@ -38,7 +38,7 @@ pasadura = 1 #1 metro
 largo_pozo = altura_banco + pasadura
 
 categorias = ['Fase','Tipo de tronadura','Tipo Material','M','Dominio Estructural','Tipo Explosivo']
-floats = ['Diámetro','Fc','P10','P20','P30','P40','P50','P60','P70','P80','P90','P100','Este','Norte','Cota']
+floats = ['Banco','Diámetro','Fc','P10','P20','P30','P40','P50','P60','P70','P80','P90','P100','Este','Norte','Cota']
 otros = ['BxS','Tiempo entre Pozos Filas ms']
 
 clean_dataframe = pd.DataFrame()
@@ -51,10 +51,9 @@ for header_name in headers:
         clean_dataframe, class_mapping = enconde_string_category(df,clean_dataframe,class_mapping,header_name)
     else:
         if header_name in floats:
-            try:
-                clean_dataframe[header_name] = pd.to_numeric(df[header_name])               
-            except:
-                clean_dataframe[header_name] = column_to_float(df,header_name) 
+            clean_dataframe[header_name] = column_to_float(df,header_name)
+            #clean_dataframe[header_name] = pd.to_numeric(df[header_name])               
+             
 
                     
 #otros
@@ -69,7 +68,7 @@ for bxs in df['BxS']:
 
 clean_dataframe['Burden'] = burden_list
 clean_dataframe['Espaciamiento'] = espaciamiento_list      
-
+clean_dataframe['Area'] = clean_dataframe['Burden']*clean_dataframe['Espaciamiento']
 # tiempo entre pozos y filas ms
 tx_list = []
 ty_list = []
@@ -82,7 +81,7 @@ for txy in df['Tiempo entre Pozos Filas ms']:
 clean_dataframe['t_x'] = tx_list
 clean_dataframe['t_y'] = ty_list
 
-clean_dataframe.to_excel('clean_database.xls')
+clean_dataframe.to_excel('clean_database.xls', index = False)
 np.save('mapping.npy',class_mapping)
 
 
