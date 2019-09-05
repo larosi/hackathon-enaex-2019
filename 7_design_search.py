@@ -75,20 +75,26 @@ for dfactible_i in range(0,params_mina.shape[0]):
 
     # parametros a buscar
     diametros = [12.25,11,10,8,6.5,6]
+    min_BxS = [5.5,5.5,5,4,4,3.5]
     t_explosivos = [0,1,2,3,4,5,6,7,8,9]
+    rho_explosivos = [1.32,1.32,1.32,1.32,1.3,1.34,1.32,1.32,1,1]
+    rho_roca = [2.65,2.74,2.53,2.65,2.65,2.53]
     fc_mean = dataset_features.loc[nearest_index]['Fc']
-    for iteration in range(0,50):
-        for diametro in diametros:
+    rho_m = rho_roca[int(param_mina['M'])]
+    for iteration in range(0,100):
+        for diametro_i in range(0,len(diametros)):
             for explosivo in t_explosivos:
+                diametro = diametros[diametro_i]
                 current_param = {}
                 current_param['Diámetro'] = diametro
                 current_param['Tipo Explosivo'] = explosivo
-                
-                fc = fc_mean+random.randint( max(-250,100-fc_mean),min(250,800-fc_mean))
-                #fc = random.randint(100,1000)
+                rho_explosivo = rho_explosivos[explosivo]
+
+                #fc = fc_mean+random.randint( max(-250,100-fc_mean),min(250,800-fc_mean))
+                fc = random.randint(100,1000)
                 current_param['Fc'] = fc
-            
-                area = random.randint(31,225)#burden*espaciamiento
+                min_area = np.ceil(min_BxS[diametro_i]**2)
+                area = random.randint(min_area,225)#burden*espaciamiento
                 ratio = random.randint(10,40)/20
                 espaciamiento = int(np.sqrt(area/ratio))
                 burden = int(area/espaciamiento)
@@ -102,14 +108,24 @@ for dfactible_i in range(0,params_mina.shape[0]):
                 t_y = min(max(dataset_features.loc[nearest_index]['t_y']+random.randint(-20,20),1),2000)
                 current_param['t_x'] = t_x
                 current_param['t_y'] = t_y
-                feature_vector = []
-                for header_name in design_space_header:
-                    if header_name in param_mina_header:
-                        feature_vector.append(param_mina[header_name])
-                    else:
-                        feature_vector.append(current_param[header_name])
                 
-                design_space.append(feature_vector)
+                # formula fc anexo
+                ton_roca = area*altura_banco*rho_m
+                gr_explosivo = fc*ton_roca
+                
+                taco = largo_pozo-gr_explosivo/rho_explosivo *inch_meter*inch_meter*4/(3.1416*diametro*diametro)
+                
+                taco_ok = min(taco>25*diametro*inch_meter,espaciamiento/2,burden/2) & (taco<7.5)
+                #print(taco)
+                if taco_ok:
+                    feature_vector = []
+                    for header_name in design_space_header:
+                        if header_name in param_mina_header:
+                            feature_vector.append(param_mina[header_name])
+                        else:
+                            feature_vector.append(current_param[header_name])
+                    
+                    design_space.append(feature_vector)
     df_design_space = pd.DataFrame(design_space, columns=design_space_header)
     y_pred =  model.predict(df_design_space)
     predicted_p = pd.DataFrame(y_pred,columns=p_values_names)
