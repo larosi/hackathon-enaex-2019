@@ -43,7 +43,7 @@ def column_to_float(df,col_name):
     return pd.DataFrame(col_list, columns=[col_name])
     
     
-data_path = os.path.join('.','Datos_Entregable2_Hackathon.xlsx')
+data_path = os.path.join('.','Datos_Entregable3_Hackathon.xlsx')
 df = pd.read_excel(data_path,skiprows=2) #el header esta en la linea 
 
 df = df.dropna() #quitamos las filas con datos NaN
@@ -78,30 +78,33 @@ for header_name in headers:
                     
 #otros
 
-#BxS          
-burden_list = []
-espaciamiento_list = []
-for bxs in df['BxS']:
-    burden,espaciamiento = (bxs.lower()).split('x')
-    burden_list.append(float(burden))
-    espaciamiento_list.append(float(espaciamiento))
-
-clean_dataframe['Burden'] = burden_list
-clean_dataframe['Espaciamiento'] = espaciamiento_list      
-clean_dataframe['Area'] = clean_dataframe['Burden']*clean_dataframe['Espaciamiento']
-# tiempo entre pozos y filas ms
-tx_list = []
-ty_list = []
-
-for txy in df['Tiempo entre Pozos Filas ms']:
-    tx,ty = txy.split('-')
-    tx_list.append(float(tx))
-    ty_list.append(float(ty))
+#BxS
+if 'BxS' in headers:
+    burden_list = []
+    espaciamiento_list = []
+    for bxs in df['BxS']:
+        burden,espaciamiento = (bxs.lower()).split('x')
+        burden_list.append(float(burden))
+        espaciamiento_list.append(float(espaciamiento))
     
-clean_dataframe['t_x'] = tx_list
-clean_dataframe['t_y'] = ty_list
+    clean_dataframe['Burden'] = burden_list
+    clean_dataframe['Espaciamiento'] = espaciamiento_list      
+    clean_dataframe['Area'] = clean_dataframe['Burden']*clean_dataframe['Espaciamiento']
+    
+if 'Tiempo entre Pozos Filas ms' in headers:    
+    # tiempo entre pozos y filas ms
+    tx_list = []
+    ty_list = []
+    
+    for txy in df['Tiempo entre Pozos Filas ms']:
+        tx,ty = txy.split('-')
+        tx_list.append(float(tx))
+        ty_list.append(float(ty))
+        
+    clean_dataframe['t_x'] = tx_list
+    clean_dataframe['t_y'] = ty_list
 
-clean_dataframe.to_excel('Datos_Entregable2_Hackathon_clean.xlsx', index = False)
+clean_dataframe.to_excel('Datos_Entregable3_Hackathon_clean.xlsx', index = False)
 #np.save('mapping.npy',class_mapping)
 
 
