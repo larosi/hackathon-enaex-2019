@@ -19,20 +19,13 @@ from keras.callbacks import History
 from keras import optimizers
 
 
-p_predictor = False
 
-if(p_predictor):
-    train_test_data = 'train_test_data.npy'
-    model_name = 'nn_model.h5'
-    n_neurons = 25
-    n_epochs = 50
-    lrate = 0.001
-else:
-    train_test_data = 'train_test_data2.npy'
-    model_name = 'nn_model_Dparam.h5'
-    n_neurons = 20
-    n_epochs = 150
-    lrate = 0.001
+train_test_data = 'train_test_data.npy'
+model_name = 'nn_model.h5'
+n_neurons = 25
+n_epochs = 150
+lrate = 0.001
+
 # cargar datos
 
 x_train, x_test, y_train, y_test = np.load(train_test_data)

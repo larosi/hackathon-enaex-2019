@@ -11,7 +11,6 @@ import os
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-p_predictor = True
 # cargar dataset
 data_filename = 'clean_database.xls'
 data_path = os.path.join('.',data_filename)
@@ -22,13 +21,10 @@ df = pd.read_excel(data_path)
 headers = df.columns
 print(headers)
 
-if(p_predictor):
-    target_names = ['P10','P20','P30','P40','P50','P60','P70','P80','P90','P100']
-    remove_names = []
-else:
-    target_names = ['Fc']
-    #target_names = ['Fc', 'Burden', 'Espaciamiento','Area','t_x','t_y']
-    remove_names = ['Diámetro','Area','Burden', 'Espaciamiento','t_x','t_y']
+
+target_names = ['P10','P20','P30','P40','P50','P60','P70','P80','P90','P100']
+remove_names = []
+
 
 target_data = pd.DataFrame()
 #target_data['P0'] = 0*df['P10']
@@ -55,11 +51,11 @@ print('')
 print('target')
 print(y.columns)
 
-x_train, x_test, y_train, y_test = train_test_split(x.values, y.values, test_size=0.3, random_state=42)
 
-if(p_predictor):
-    np.save('dataset.npy',[x,y])
-    np.save('train_test_data.npy',[x_train, x_test, y_train, y_test])
-else:
-    np.save('train_test_data2.npy',[x_train, x_test, y_train, y_test])
+x_train, x_test, y_train, y_test = train_test_split(x.values, y.values, test_size=0.1, random_state=42)
+
+
+np.save('dataset.npy',[x,y])
+np.save('train_test_data.npy',[x_train, x_test, y_train, y_test])
+
 
